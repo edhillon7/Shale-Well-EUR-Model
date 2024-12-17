@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shale Well EUR Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Shale Well EUR Predictor</h2>
+    
+    <form id="eurForm">
+        <label for="stageSpacing">Stage Spacing (ft):</label>
+        <input type="number" id="stageSpacing" name="stageSpacing" required>
+
+        <label for="bblPerFt">bbl/ft:</label>
+        <input type="number" id="bblPerFt" name="bblPerFt" required>
+
+        <label for="wellSpacing">Well Spacing (ft):</label>
+        <input type="number" id="wellSpacing" name="wellSpacing" required>
+
+        <label for="dip">Dip (degrees):</label>
+        <input type="number" id="dip" name="dip" required>
+
+        <label for="thickness">Thickness (ft):</label>
+        <input type="number" id="thickness" name="thickness" required>
+
+        <label for="lateralLength">Lateral Length (ft):</label>
+        <input type="number" id="lateralLength" name="lateralLength" required>
+
+        <label for="injectionRate">Injection Rate (bbl/min):</label>
+        <input type="number" id="injectionRate" name="injectionRate" required>
+
+        <label for="porosity">Porosity (%):</label>
+        <input type="number" id="porosity" name="porosity" required>
+
+        <label for="isip">ISIP (psi):</label>
+        <input type="number" id="isip" name="isip" required>
+
+        <label for="waterSaturation">Water Saturation (%):</label>
+        <input type="number" id="waterSaturation" name="waterSaturation" required>
+
+        <label for="percentageOfLG">Percentage of LG (%):</label>
+        <input type="number" id="percentageOfLG" name="percentageOfLG" required>
+
+        <label for="pressureGradient">Pressure Gradient (psi/ft):</label>
+        <input type="number" id="pressureGradient" name="pressureGradient" required>
+
+        <label for="proppantLoading">Proppant Loading (lb/ft):</label>
+        <input type="number" id="proppantLoading" name="proppantLoading" required>
+
+        <button type="button" onclick="getPrediction()">Predict EUR</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        async function getPrediction() {
+            // Retrieve form values
+            const stageSpacing = parseFloat(document.getElementById("stageSpacing").value);
+            const bblPerFt = parseFloat(document.getElementById("bblPerFt").value);
+            const wellSpacing = parseFloat(document.getElementById("wellSpacing").value);
+            const dip = parseFloat(document.getElementById("dip").value);
+            const thickness = parseFloat(document.getElementById("thickness").value);
+            const lateralLength = parseFloat(document.getElementById("lateralLength").value);
+            const injectionRate = parseFloat(document.getElementById("injectionRate").value);
+            const porosity = parseFloat(document.getElementById("porosity").value);
+            const isip = parseFloat(document.getElementById("isip").value);
+            const waterSaturation = parseFloat(document.getElementById("waterSaturation").value);
+            const percentageOfLG = parseFloat(document.getElementById("percentageOfLG").value);
+            const pressureGradient = parseFloat(document.getElementById("pressureGradient").value);
+            const proppantLoading = parseFloat(document.getElementById("proppantLoading").value);
+
+            // Prepare the input data to match API requirements
+            const inputData = {
+                input_data: [
+                    stageSpacing, bblPerFt, wellSpacing, dip, thickness, lateralLength,
+                    injectionRate, porosity, isip, waterSaturation, percentageOfLG,
+                    pressureGradient, proppantLoading
+                ]
+            };
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(inputData)
+                });
+
+                // Display the prediction result
+                const data = await response.json();
+                document.getElementById("result").textContent = `Predicted EUR: ${data.prediction} Bbl`;
+            } catch (error) {
+                document.getElementById("result").textContent = "Error: Could not retrieve prediction.";
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
